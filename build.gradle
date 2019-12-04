@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'java'
     id 'groovy'
+    id 'io.freefair.lombok' version '4.1.5'
 }
 
 group = 'com.github.apiechowicz'

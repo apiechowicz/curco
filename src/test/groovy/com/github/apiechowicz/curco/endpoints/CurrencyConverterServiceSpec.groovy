@@ -30,13 +30,13 @@ class CurrencyConverterServiceSpec extends Specification {
     private ObjectMapper objectMapper
 
     def "returns result of currency conversion for valid request"() {
-        given: 'valid input data'
+        given: 'valid request data'
         BigDecimal amount = 1
         Currency from = Currency.USD
         Currency to = Currency.USD
 
         and: 'the fact that currency converter service returns valid conversion result'
-        BigDecimal conversionResult = 2
+        Optional<BigDecimal> conversionResult = Optional.of(BigDecimal.valueOf(2))
         converterService.convertCurrencies(amount, from, to) >> conversionResult
 
         when: 'valid request for currency conversion is performed'
@@ -53,7 +53,31 @@ class CurrencyConverterServiceSpec extends Specification {
         response.status == HttpStatus.OK.value()
 
         and: 'returned result will be equal to result of currency conversion'
-        objectMapper.readValue(response.contentAsString, BigDecimal) == conversionResult
+        objectMapper.readValue(response.contentAsString, BigDecimal) == conversionResult.get()
+    }
+
+    def "returns service unavailable when currency converter cannot convert currencies"() {
+        given: 'valid request data'
+        BigDecimal amount = 1
+        Currency from = Currency.USD
+        Currency to = Currency.USD
+
+        and: 'the fact that currency converter service cannot calculate result'
+        Optional<BigDecimal> conversionResult = Optional.empty()
+        converterService.convertCurrencies(amount, from, to) >> conversionResult
+
+        when: 'valid request for currency conversion is performed'
+        MockHttpServletResponse response = mvc.perform(get('/convert')
+                .param('amount', amount.toString())
+                .param('from', from.name())
+                .param('to', to.name())
+        ).andReturn().response
+
+        then: 'response will not be null'
+        response != null
+
+        and: 'service unavailable status will be returned'
+        response.status == HttpStatus.SERVICE_UNAVAILABLE.value()
     }
 
     @TestConfiguration
