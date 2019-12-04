@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-final class ApiExchangeRateResponse implements Serializable {
+class ApiExchangeRateResponse implements Serializable {
     private String table;
     private String currency;
     private String code;
@@ -20,7 +20,7 @@ final class ApiExchangeRateResponse implements Serializable {
     @Getter
     @Setter
     @NoArgsConstructor
-    static final class Rate {
+    static class Rate {
         private String no;
         private String effectiveDate;
         private BigDecimal mid;

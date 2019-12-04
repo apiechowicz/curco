@@ -1,3 +1,6 @@
 server:
   servlet:
     context-path: /currencies
+
+api:
+  url: http://api.nbp.pl/api/exchangerates
