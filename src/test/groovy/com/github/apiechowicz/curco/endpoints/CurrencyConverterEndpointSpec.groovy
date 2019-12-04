@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @AutoConfigureMockMvc
 @WebMvcTest(controllers = CurrencyConverterEndpoint)
-class CurrencyConverterServiceSpec extends Specification {
+class CurrencyConverterEndpointSpec extends Specification {
 
     @Autowired
     private MockMvc mvc
