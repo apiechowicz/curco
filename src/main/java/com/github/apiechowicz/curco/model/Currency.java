@@ -1,6 +1,15 @@
 package com.github.apiechowicz.curco.model;
 
-public enum Currency {
+import com.fasterxml.jackson.annotation.JsonCreator;
+
+import java.io.Serializable;
+
+public enum Currency implements Serializable {
     USD,
-    CHF
+    CHF;
+
+    @JsonCreator
+    public static Currency fromText(String text) {
+        return Currency.valueOf(text.toUpperCase());
+    }
 }

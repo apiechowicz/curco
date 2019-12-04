@@ -31,7 +31,7 @@ class ExchangeRateProviderSpec extends Specification {
         and: 'it will contain proper values'
         with(result.get()) {
             it.currency == currency
-            value == exchangeRate
+            it.exchangeRate == exchangeRate
         }
     }
 
@@ -76,7 +76,7 @@ class ExchangeRateProviderSpec extends Specification {
         and: 'it will contain proper values'
         with(result.get()) {
             it.currency == currency
-            value == exchangeRate
+            it.exchangeRate == exchangeRate
         }
 
         when: 'exchange rate is requested for the same currency'

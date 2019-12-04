@@ -40,8 +40,8 @@ public class CurrencyConverterService {
     private BigDecimal calculateAmount(BigDecimal amount, ExchangeRate firstCurrencyExchangeRate,
                                        ExchangeRate secondCurrencyExchangeRate) {
         return amount.setScale(CALCULATION_PRECISION, ROUNDING_MODE)
-                .multiply(firstCurrencyExchangeRate.getValue())
-                .divide(secondCurrencyExchangeRate.getValue(), ROUNDING_MODE)
+                .multiply(firstCurrencyExchangeRate.getExchangeRate())
+                .divide(secondCurrencyExchangeRate.getExchangeRate(), ROUNDING_MODE)
                 .setScale(RESULT_PRECISION, ROUNDING_MODE);
     }
 }
