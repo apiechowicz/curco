@@ -2,6 +2,7 @@ package com.github.apiechowicz.curco.services;
 
 import com.github.apiechowicz.curco.model.Currency;
 import com.github.apiechowicz.curco.model.ExchangeRate;
+import com.github.apiechowicz.curco.services.exchangerate.ExchangeRateProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
