@@ -14,9 +14,10 @@ public class SwaggerConfig {
 
     @Bean
     public Docket api() {
+        final String packageName = getClass().getPackage().getName().replace("configs", "endpoints");
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.github.apiechowicz.curco.endpoints"))
+                .apis(RequestHandlerSelectors.basePackage(packageName))
                 .paths(PathSelectors.any())
                 .build();
     }

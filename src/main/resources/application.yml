@@ -1,2 +1,12 @@
 api:
   url: http://api.nbp.pl/api/exchangerates
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://db:3306/currencies
+    username: currencies_user
+    password: currencies_user

@@ -1,14 +1,13 @@
 package com.github.apiechowicz.curco.services;
 
-import com.github.apiechowicz.curco.model.Currency;
-import com.github.apiechowicz.curco.model.ExchangeRate;
-import com.github.apiechowicz.curco.services.exchangerate.ExchangeRateProvider;
+import com.github.apiechowicz.curco.model.daos.ConversionDao;
+import com.github.apiechowicz.curco.model.daos.ExchangeRateDao;
+import com.github.apiechowicz.curco.repositories.ConversionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Optional;
 
 @Service
 public class CurrencyConverterService {
@@ -17,31 +16,32 @@ public class CurrencyConverterService {
     private static final int CALCULATION_PRECISION = 10;
     private static final int RESULT_PRECISION = 2;
 
-    private final ExchangeRateProvider exchangeRateProvider;
+    private final ConversionRepository conversionRepository;
 
     @Autowired
-    public CurrencyConverterService(ExchangeRateProvider exchangeRateProvider) {
-        this.exchangeRateProvider = exchangeRateProvider;
+    public CurrencyConverterService(ConversionRepository conversionRepository) {
+        this.conversionRepository = conversionRepository;
     }
 
-    public Optional<BigDecimal> convertCurrencies(BigDecimal amount, Currency from, Currency to) {
+    public BigDecimal convertCurrencies(BigDecimal amount, ExchangeRateDao from, ExchangeRateDao to) {
         if (from == to || BigDecimal.ZERO.equals(amount)) {
-            return Optional.of(amount);
+            return amount;
         }
-        final Optional<ExchangeRate> firstCurrencyExchangeRate = exchangeRateProvider.provideExchangeRate(from);
-        if (!firstCurrencyExchangeRate.isPresent()) {
-            return Optional.empty();
-        }
-        final Optional<ExchangeRate> secondCurrencyExchangeRate = exchangeRateProvider.provideExchangeRate(to);
-        return secondCurrencyExchangeRate
-                .map(exchangeRate -> calculateAmount(amount, firstCurrencyExchangeRate.get(), exchangeRate));
+        final BigDecimal conversionResult = calculateAmount(amount, from.getExchangeRate(), to.getExchangeRate());
+        saveResult(amount, from, to, conversionResult);
+        return conversionResult;
     }
 
-    private BigDecimal calculateAmount(BigDecimal amount, ExchangeRate firstCurrencyExchangeRate,
-                                       ExchangeRate secondCurrencyExchangeRate) {
+    private BigDecimal calculateAmount(BigDecimal amount, BigDecimal firstCurrencyExchangeRate,
+                                       BigDecimal secondCurrencyExchangeRate) {
         return amount.setScale(CALCULATION_PRECISION, ROUNDING_MODE)
-                .multiply(firstCurrencyExchangeRate.getExchangeRate())
-                .divide(secondCurrencyExchangeRate.getExchangeRate(), ROUNDING_MODE)
+                .multiply(firstCurrencyExchangeRate)
+                .divide(secondCurrencyExchangeRate, ROUNDING_MODE)
                 .setScale(RESULT_PRECISION, ROUNDING_MODE);
+    }
+
+    private ConversionDao saveResult(BigDecimal amount, ExchangeRateDao exchangeRateFrom,
+                                     ExchangeRateDao exchangeRateTo, BigDecimal conversionResult) {
+        return conversionRepository.save(new ConversionDao(amount, exchangeRateFrom, exchangeRateTo, conversionResult));
     }
 }

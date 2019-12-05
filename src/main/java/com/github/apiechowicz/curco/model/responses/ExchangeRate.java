@@ -1,4 +1,4 @@
-package com.github.apiechowicz.curco.model;
+package com.github.apiechowicz.curco.model.responses;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -7,8 +7,8 @@ import java.math.BigDecimal;
 
 @Getter
 @RequiredArgsConstructor
-public final class ExchangeRate {
+public class ExchangeRate implements Response {
 
-    private final Currency currency;
+    private final Currency currencyResponse;
     private final BigDecimal exchangeRate;
 }

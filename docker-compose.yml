@@ -1,9 +1,33 @@
 version: "3.3"
 
 services:
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    # for actual deployment use docker secrets or another secure option of storing credentials. and pass them to app container
+    environment:
+      MYSQL_DATABASE: currencies
+      MYSQL_USER: currencies_user
+      MYSQL_PASSWORD: currencies_user
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - backend
   app:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - backend
+
+volumes:
+  db-data:
+
+networks:
+  backend:
