@@ -5,8 +5,41 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import java.io.Serializable;
 
 public enum Currency implements Serializable {
+    THB,
     USD,
-    CHF;
+    AUD,
+    HKD,
+    CAD,
+    NZD,
+    SGD,
+    EUR,
+    HUF,
+    CHF,
+    GBP,
+    UAH,
+    JPY,
+    CZK,
+    DKK,
+    ISK,
+    NOK,
+    SEK,
+    HRK,
+    RON,
+    BGN,
+    TRY,
+    ILS,
+    CLP,
+    PHP,
+    MXN,
+    ZAR,
+    BRL,
+    MYR,
+    RUB,
+    IDR,
+    INR,
+    KRW,
+    CNY,
+    XDR;
 
     @JsonCreator
     public static Currency fromText(String text) {
