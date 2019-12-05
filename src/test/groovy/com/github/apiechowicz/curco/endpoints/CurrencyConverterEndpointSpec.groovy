@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
+import spock.lang.Unroll
 import spock.mock.DetachedMockFactory
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -78,6 +79,39 @@ class CurrencyConverterEndpointSpec extends Specification {
 
         and: 'service unavailable status will be returned'
         response.status == HttpStatus.SERVICE_UNAVAILABLE.value()
+    }
+
+    @Unroll
+    def "supports #caseName case currency codes"(String caseName, String first, String second) {
+        given: 'valid request data'
+        BigDecimal amount = 1
+
+        and: 'the fact that currency converter service returns valid conversion result'
+        Optional<BigDecimal> conversionResult = Optional.of(BigDecimal.valueOf(2))
+        converterService.convertCurrencies(amount, _, _) >> conversionResult
+
+        when: 'valid request for currency conversion is performed'
+        MockHttpServletResponse response = mvc.perform(get('/convert')
+                .param('amount', amount.toString())
+                .param('from', first)
+                .param('to', second)
+        ).andReturn().response
+
+        then: 'response will not be null'
+        response != null
+
+        and: 'ok status will be returned'
+        response.status == HttpStatus.OK.value()
+
+        and: 'returned result will be equal to result of currency conversion'
+        objectMapper.readValue(response.contentAsString, BigDecimal) == conversionResult.get()
+
+        where:
+        caseName               | first  | second
+        'lower'                | 'usd' | 'chf'
+        'upper'                | 'USD' | 'CHF'
+        'mixed (lower, upper)' | 'usd' | 'CHF'
+        'mixed (upper, lower)' | 'USD' | 'chf'
     }
 
     @TestConfiguration

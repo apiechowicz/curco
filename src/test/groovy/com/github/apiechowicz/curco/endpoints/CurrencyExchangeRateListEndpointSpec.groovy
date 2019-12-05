@@ -77,6 +77,38 @@ class CurrencyExchangeRateListEndpointSpec extends Specification {
         response.status == HttpStatus.BAD_REQUEST.value()
     }
 
+    @Unroll
+    def "supports #caseName case currency codes"(String caseName, List<String> currencies) {
+        when: 'request for list of exchange rates is performed with valid argument'
+        MockHttpServletResponse response = mvc.perform(post(URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(currencies))
+        ).andReturn()
+                .response
+
+        then: 'exchange rate provider will be queried for every currency in request'
+        currencies.size() * exchangeRateProvider.provideExchangeRate(_) >> { arguments ->
+            createExchangeRate(arguments[0] as Currency)
+        }
+        and: 'response will not be null'
+        response != null
+        and: 'ok status will be returned'
+        response.status == HttpStatus.OK.value()
+        and: 'every currency from the request will be present in response'
+        List<ExchangeRate> exchangeRates = objectMapper.readValue(response.contentAsString, TYPE)
+        exchangeRates.size() == currencies.size()
+        [exchangeRates, currencies].transpose().each { rate, currency ->
+            assert rate.currency.name() == currency.toUpperCase()
+        }
+
+        where:
+        caseName               | currencies
+        'lower'                | ['usd', 'chf']
+        'upper'                | ['USD', 'CHF']
+        'mixed (lower, upper)' | ['usd', 'CHF']
+        'mixed (upper, lower)' | ['USD', 'chf']
+    }
+
     private static Optional<ExchangeRate> createExchangeRate(Currency currency) {
         Optional.of(new ExchangeRate(currency, BigDecimal.ONE))
     }
